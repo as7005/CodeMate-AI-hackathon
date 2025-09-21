@@ -68,7 +68,7 @@ def exec_shell_file(terminal_instance, current_path, file_path):
 
             terminal_instance.run_command(cmd, args)
 
-        print("-" * 40)
+        print("-" * 70)
         print("Script execution completed.")
         return True
 

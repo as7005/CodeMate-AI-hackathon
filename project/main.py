@@ -14,6 +14,7 @@ import threading
 # Import our new modules
 from filesystem import list_directory, change_directory, make_directory, remove_file, tree_directory
 from system_monitor import SystemMonitor
+from text_editor import NanoEditor
 from misc import exec_file, show_help
 
 
@@ -21,7 +22,9 @@ class SimpleTerminal:
     def __init__(self):
         self.current_path = Path.cwd()
         self.history = []
+
         self.system_monitor = SystemMonitor()
+        self.editor = NanoEditor(self.current_path)
 
     def run_command(self, command, args):
         try:
@@ -43,8 +46,14 @@ class SimpleTerminal:
                     else:
                         exec_file(self, self.current_path, args[0])
                 case 'help': show_help()
-                case 'dashboard':
+                case 'tools.dashboard':
                     self.system_monitor.start_dashboard()
+                case 'tools.editor':
+                    if not args:
+                        print("Usage: edit <filename>")
+                    else:
+                        editor = NanoEditor(self.current_path / args[0])
+                        editor.run()
                 case 'exit':
                     print("Goodbye!")
                     return False
@@ -60,7 +69,7 @@ class SimpleTerminal:
 
         while True:
             try:
-                if self.system_monitor.dashboard_active:
+                if self.system_monitor.running:
                     time.sleep(1)
                     continue
 
