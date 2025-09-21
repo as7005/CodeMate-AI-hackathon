@@ -8,8 +8,19 @@ import shutil
 from pathlib import Path
 
 # ANSI color codes
-BLUE = "\033[94m"
-RESET = "\033[0m"
+BLUE = "\033[94m"   # Directories
+RED = "\033[91m"    # Python / Shell files
+RESET = "\033[0m"   # Reset to default
+
+
+def colorize(item: Path) -> str:
+    """Return colored string based on file type"""
+    if item.is_dir():
+        return f"{BLUE}{item.name}{RESET}"
+    elif item.suffix in ['.py', '.sh']:
+        return f"{RED}{item.name}{RESET}"
+    else:
+        return item.name
 
 
 def list_directory(path, args):
@@ -19,17 +30,12 @@ def list_directory(path, args):
             # Long format listing
             for item in sorted(path.iterdir()):
                 if item.is_dir():
-                    print(f"d {' ' * 8} {BLUE}{item.name}{RESET}")
+                    print(f"d {' ' * 8} {colorize(item)}")
                 else:
-                    print(f"- {' ' * 8} {item.name}")
+                    print(f"- {' ' * 8} {colorize(item)}")
         else:
             # Simple listing
-            items = []
-            for item in sorted(path.iterdir()):
-                if item.is_dir():
-                    items.append(f"{BLUE}{item.name}{RESET}")
-                else:
-                    items.append(item.name)
+            items = [colorize(item) for item in sorted(path.iterdir())]
             print(" ".join(items))
     except PermissionError:
         print("Permission denied")
@@ -46,10 +52,7 @@ def tree_directory(path, args, prefix="", is_last=True):
             print(path.name)
         else:
             connector = "└── " if is_last else "├── "
-            if path.is_dir():
-                print(f"{prefix}{connector}{BLUE}{path.name}{RESET}")
-            else:
-                print(f"{prefix}{connector}{path.name}")
+            print(f"{prefix}{connector}{colorize(path)}")
 
         # Print children with proper tree structure
         for i, item in enumerate(items):
@@ -60,7 +63,7 @@ def tree_directory(path, args, prefix="", is_last=True):
                 tree_directory(item, args, new_prefix, is_last_child)
             else:
                 file_connector = "└── " if is_last_child else "├── "
-                print(f"{new_prefix}{file_connector}{item.name}")
+                print(f"{new_prefix}{file_connector}{colorize(item)}")
     except PermissionError:
         print("Permission denied")
 

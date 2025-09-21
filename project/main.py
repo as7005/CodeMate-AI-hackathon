@@ -14,7 +14,6 @@ import threading
 # Import our new modules
 from filesystem import list_directory, change_directory, make_directory, remove_file, tree_directory
 from system_monitor import SystemMonitor
-from shell_scripts import execute_script
 from misc import exec_file, show_help
 
 
